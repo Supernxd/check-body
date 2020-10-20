@@ -43,13 +43,20 @@ exports.koaCheck = exports.expressCheck = void 0;
 var commonCheck_1 = __importDefault(require("./commonCheck"));
 exports.expressCheck = function (opts) {
     return function (req, res, next) {
+        var count = 0;
         for (var _i = 0, opts_1 = opts; _i < opts_1.length; _i++) {
             var validParam = opts_1[_i];
-            var returnValue = commonCheck_1.default(req, validParam);
-            if (returnValue !== 'OK')
-                return next({ code: 400, msg: returnValue });
+            commonCheck_1.default(req, validParam)
+                .then(function (returnValue) {
+                if (returnValue !== 'OK')
+                    return next({ code: 400, msg: returnValue });
+                if (++count === opts.length)
+                    next();
+            })
+                .catch(function (err) {
+                return next({ code: 400, msg: 'request fail' });
+            });
         }
-        next();
     };
 };
 exports.koaCheck = function (opts) {
@@ -58,17 +65,25 @@ exports.koaCheck = function (opts) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    for (_i = 0, opts_2 = opts; _i < opts_2.length; _i++) {
-                        validParam = opts_2[_i];
-                        returnValue = commonCheck_1.default(ctx.request, validParam);
-                        if (returnValue !== 'OK') {
-                            ctx.body = returnValue;
-                            ctx.status = 400;
-                            return [2 /*return*/];
-                        }
-                    }
-                    return [4 /*yield*/, next()];
+                    _i = 0, opts_2 = opts;
+                    _a.label = 1;
                 case 1:
+                    if (!(_i < opts_2.length)) return [3 /*break*/, 4];
+                    validParam = opts_2[_i];
+                    return [4 /*yield*/, commonCheck_1.default(ctx.request, validParam)];
+                case 2:
+                    returnValue = _a.sent();
+                    if (returnValue !== 'OK') {
+                        ctx.body = returnValue;
+                        ctx.status = 400;
+                        return [2 /*return*/];
+                    }
+                    _a.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4: return [4 /*yield*/, next()];
+                case 5:
                     _a.sent();
                     return [2 /*return*/];
             }

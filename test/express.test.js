@@ -25,6 +25,9 @@ app
 .all('/test5', expressCheck(testData.test5), (req, res) => {
   res.send('Hello World')
 })
+.all('/test6', expressCheck(testData.test6), (req, res) => {
+  res.send('Hello World')
+})
 .use((err, req, res, next) => {
   res.status(err.code || 500).send(err.msg || 'Something broke!')
 })
@@ -143,6 +146,38 @@ describe('---------- express ----------', function () {
     request(app)
     .post('/test5')
     .send({num: 104})
+    .expect(200)
+    .expect('Hello World')
+    .end((err, res) => {
+      if (err) throw err
+      done()
+    })
+  })
+  it('Promise Reject', done => {
+    request(app)
+    .post('/test6')
+    .send({num: 104})
+    .expect(400)
+    .expect('sleep 2 second')
+    .end((err, res) => {
+      if (err) throw err
+      done()
+    })
+  })
+  it('Promise Resolve', done => {
+    request(app)
+    .post('/test6')
+    .send({num: 99})
+    .expect(200)
+    .expect('Hello World')
+    .end((err, res) => {
+      if (err) throw err
+      done()
+    })
+  })
+  it('参数非必传未传promise不检查', done => {
+    request(app)
+    .post('/test6')
     .expect(200)
     .expect('Hello World')
     .end((err, res) => {

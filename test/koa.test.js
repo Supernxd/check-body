@@ -24,6 +24,9 @@ router
 .all('/test5', koaCheck(testData.test5), async ctx => {
   ctx.body = 'Hello World'
 })
+.all('/test6', koaCheck(testData.test6), async ctx => {
+  ctx.body = 'Hello World'
+})
 
 app
   .use(bodyParser())
@@ -144,6 +147,38 @@ describe('---------- koa ----------', function () {
     request(koaAPP)
     .post('/test5')
     .send({num: 104})
+    .expect(200)
+    .expect('Hello World')
+    .end((err, res) => {
+      if (err) throw err
+      done()
+    })
+  })
+  it('Promise Reject', done => {
+    request(koaAPP)
+    .post('/test6')
+    .send({num: 104})
+    .expect(400)
+    .expect('sleep 2 second')
+    .end((err, res) => {
+      if (err) throw err
+      done()
+    })
+  })
+  it('Promise Resolve', done => {
+    request(koaAPP)
+    .post('/test6')
+    .send({num: 99})
+    .expect(200)
+    .expect('Hello World')
+    .end((err, res) => {
+      if (err) throw err
+      done()
+    })
+  })
+  it('参数非必传未传promise不检查', done => {
+    request(koaAPP)
+    .post('/test6')
     .expect(200)
     .expect('Hello World')
     .end((err, res) => {

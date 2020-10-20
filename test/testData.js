@@ -11,3 +11,17 @@ exports.test5 = [
     {fn: value => value < 105} 
   ]}
 ]
+const sleep = (value)=> {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if(value > 100)
+        return reject(false)
+      return resolve(true)
+    }, 1000)
+  })
+}
+exports.test6 = [
+  {name: 'num', type: "number", validateFnArr: [
+    {fn: sleep, message: 'sleep 2 second'}
+  ]}
+]

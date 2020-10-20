@@ -18,7 +18,7 @@ interface validateFn {
   message: string
 }
 
-export default (req: needRequest, validParam: ParamOpt): string => {
+export default async (req: needRequest, validParam: ParamOpt): Promise<string> => {
   const { name, loc, type, required, validateFnArr } = validParam
   const value = getValue(req, name, loc)
 
@@ -33,11 +33,14 @@ export default (req: needRequest, validParam: ParamOpt): string => {
 
   if(validateFnArr) {
     for(const { fn, message } of validateFnArr) {
-      if(!fn(value))
+      try {
+        if(!await fn(value))
+          return message || `${name} validate Fail`
+      } catch (error) {
         return message || `${name} validate Fail`
+      }
     }
   }
-  
   return 'OK'
 }
 

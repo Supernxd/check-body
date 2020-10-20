@@ -1,5 +1,6 @@
 import check from './commonCheck'
 
+// TODO express promise 改为all？
 interface ParamOpt {
   name: string;
   loc?: 'body' | 'query' | 'head';
@@ -15,19 +16,26 @@ interface validateFn {
 
 export const expressCheck = (opts: Array<ParamOpt>): (req: any, res: any, next: any) => void => {
   return (req, res, next) => {
+    let count=0
     for(const validParam of opts){
-      const returnValue = check(req, validParam)
-      if(returnValue !== 'OK')
-        return next({code: 400, msg: returnValue})
+      check(req, validParam)
+      .then(returnValue => {
+        if(returnValue !== 'OK')
+          return next({code: 400, msg: returnValue})
+        if(++count === opts.length)
+          next()
+      })
+      .catch(err => {
+        return next({code: 400, msg: 'request fail'})
+      })
     }
-    next()
   }
 }
 
 export const koaCheck = (opts: Array<ParamOpt>): (ctx: any, next: any) => void => {
   return async (ctx, next) => {
     for(const validParam of opts){
-      const returnValue = check(ctx.request, validParam)
+      const returnValue = await check(ctx.request, validParam)
       if(returnValue !== 'OK') {
         ctx.body = returnValue
         ctx.status = 400

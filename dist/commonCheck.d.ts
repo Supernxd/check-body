@@ -14,5 +14,5 @@ interface validateFn {
     fn: (paramValue: any) => boolean;
     message: string;
 }
-declare const _default: (req: needRequest, validParam: ParamOpt) => string;
+declare const _default: (req: needRequest, validParam: ParamOpt) => Promise<string>;
 export default _default;

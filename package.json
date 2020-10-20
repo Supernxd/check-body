@@ -1,8 +1,9 @@
 {
   "name": "check-body",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "express/koa body&query params check",
   "main": "dist/index.js",
+  "repository": "https://github.com/Supernxd/check-body.git",
   "directories": {
     "lib": "dist"
   },
